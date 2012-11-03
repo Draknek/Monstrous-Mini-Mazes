@@ -2,15 +2,29 @@ package
 {
 	import net.flashpunk.*;
 	import net.flashpunk.debug.*;
+	import net.flashpunk.graphics.*;
 	import net.flashpunk.utils.*;
 	
 	[SWF(width = "640", height = "480", backgroundColor="#000000")]
 	public class Main extends Engine
 	{
+		[Embed(source = 'fonts/7x5.ttf', embedAsCFF="false", fontFamily = '7x5')]
+		public static const FONT:Class;
+		[Embed(source = 'fonts/amiga4ever pro2.ttf', embedAsCFF="false", fontFamily = 'amiga')]
+		public static const FONT2:Class;
+		
 		public function Main () 
 		{
-			super(640, 480, 60, true);
-			FP.world = new Level();
+			super(80, 60, 60, true);
+			
+			FP.screen.color = 0xdeeed6;
+			FP.screen.scale = 8;
+			Text.font = "amiga";
+			Text.size = 8;
+			
+			//FP.console.enable();
+			
+			FP.world = new Menu();
 		}
 		
 		public override function init (): void
