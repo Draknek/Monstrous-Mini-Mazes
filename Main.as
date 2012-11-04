@@ -24,7 +24,7 @@ package
 			
 			//FP.console.enable();
 			
-			FP.world = new Menu();
+			FP.world = new Level();
 		}
 		
 		public override function init (): void
