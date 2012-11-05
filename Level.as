@@ -6,6 +6,7 @@ package
 	import net.flashpunk.utils.*;
 	
 	import flash.display.*;
+	import flash.geom.*;
 	
 	public class Level extends World
 	{
@@ -81,12 +82,41 @@ package
 			
 			if (! e) return;
 			
+			var bitmap:BitmapData = Pixelmask(e.mask).data;
 			
+			var rect:Rectangle = bitmap.getColorBoundsRect(0xFF000000, 0xFF000000);
+			
+			rect.x += 1;
+			rect.y += 1;
+			
+			rect.width -= 2;
+			rect.height -= 2;
+			
+			var borderX:int = 16;
+			var borderY:int;
+			
+			var scale:Number = (FP.stage.stageWidth - borderX*2) / rect.width;
+			
+			borderX = FP.stage.stageWidth - rect.width*scale;
+			borderY = FP.stage.stageHeight - rect.height*scale;
+			
+			var screenX:int = - rect.x * scale + borderX/2;
+			var screenY:int = - rect.y * scale + borderY/2;
+			
+			if (instant) {
+				FP.screen.scale = scale;
+				FP.screen.x = screenX;
+				FP.screen.y = screenY;
+			} else {
+				var tweenTime:int = 32;
+				
+				FP.tween(FP.screen, {scale: scale, x: screenX, y: screenY}, tweenTime);
+			}
 		}
 		
 		public override function begin (): void
 		{
-			//refocus(true);
+			refocus(true);
 		}
 		
 		public override function update (): void
