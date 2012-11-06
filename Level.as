@@ -6,17 +6,23 @@ package
 	import net.flashpunk.utils.*;
 	
 	import flash.display.*;
+	import flash.events.*;
 	import flash.geom.*;
+	import flash.net.*;
 	
 	public class Level extends World
 	{
 		[Embed(source="level.png")] public static const MapGfx: Class;
 		
+		public static var levelData:BitmapData;
+		
 		public var walls:Array;
 		
 		public function Level ()
 		{
-			var data:BitmapData = FP.getBitmap(MapGfx);
+			checkForNewLevel();
+			
+			var data:BitmapData = levelData;
 			
 			var floorColor:uint = data.getPixel(0,0);
 			var playerColor:uint = data.getPixel(1,0);
@@ -72,6 +78,32 @@ package
 			
 		}
 		
+		private static var loading:Boolean = false;
+		
+		public function checkForNewLevel (): void
+		{
+			if (! levelData) levelData = FP.getBitmap(MapGfx);
+			
+			if (loading) {
+				loading = false;
+				return;
+			}
+			
+			var loader:Loader = new Loader();
+			
+			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, function (e:Event):void {
+				try {
+					levelData = Bitmap(loader.content).bitmapData;
+				} catch (error:Error) {}
+				
+				FP.world = new Level;
+			});
+			
+			loader.load(new URLRequest("level.png"));
+			
+			loading = true;
+		}
+		
 		public function refocus (instant:Boolean = false): void
 		{
 			var e:Pushable;
@@ -122,7 +154,7 @@ package
 		public override function update (): void
 		{
 			if (Input.pressed(Key.R)) {
-				FP.world = new Level;
+				checkForNewLevel();
 				return;
 			}
 			
