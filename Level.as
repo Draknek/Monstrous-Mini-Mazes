@@ -18,8 +18,12 @@ package
 		
 		public var walls:Array;
 		
+		public static var saveFile:Object;
+		
 		public function Level ()
 		{
+			if (! saveFile) saveFile = {walls: [], checkpoints: []};
+			
 			checkForNewLevel();
 			
 			var data:BitmapData = levelData;
@@ -35,10 +39,11 @@ package
 			var entityData:Object;
 			var maskData:BitmapData;
 			
+			var p:Point;
 			var c:uint;
 			
 			for (var i:int = 0; i < data.width; i++) {
-				for (var j:int = 0; j < data.height; j++) {
+				jLoop: for (var j:int = 0; j < data.height; j++) {
 					c = data.getPixel(i, j);
 					
 					if (i <= 2 && j == 0) {
@@ -49,10 +54,21 @@ package
 						continue;
 					}
 					else if (c == playerColor) {
-						add(new Player(i, j, c));
+						if (saveFile.checkpoints.length) {
+							p = saveFile.checkpoints[saveFile.checkpoints.length - 1];
+							add(new Player(p.x, p.y, c));
+						} else {
+							add(new Player(i, j, c));
+						}
+						
 						continue;
 					}
 					else if (c == checkpointColor) {
+						for each (p in saveFile.checkpoints) {
+							if (p.x == i && p.y == j) {
+								continue jLoop;
+							}
+						}
 						add(new Checkpoint(i, j, c));
 						continue;
 					}
@@ -74,6 +90,14 @@ package
 				var wall:Pushable = new Pushable(maskData);
 				add(wall);
 				walls[i] = wall;
+				
+				p = saveFile.walls[i];
+				
+				if (p) {
+					wall.x = p.x;
+					wall.y = p.y;
+					wall.active = true;
+				}
 			}
 			
 		}
@@ -146,6 +170,25 @@ package
 			}
 		}
 		
+		public function hitCheckpoint (checkpoint:Entity):void
+		{
+			remove(checkpoint);
+			
+			saveFile.checkpoints.push(new Point(checkpoint.x, checkpoint.y));
+			
+			for (var i:int = 0; i < walls.length; i++) {
+				var e:Pushable = walls[i];
+				saveFile.walls[i] = new Point(e.x, e.y);
+				
+				if (e.active) continue;
+				
+				e.active = true;
+				refocus();
+				
+				break;
+			}
+		}
+		
 		public override function begin (): void
 		{
 			refocus(true);
@@ -155,6 +198,12 @@ package
 		{
 			if (Input.pressed(Key.R)) {
 				checkForNewLevel();
+				return;
+			}
+			
+			if (Input.pressed(Key.ESCAPE)) {
+				FP.world = new Menu;
+				saveFile = null;
 				return;
 			}
 			

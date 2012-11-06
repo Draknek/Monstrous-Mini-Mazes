@@ -58,14 +58,7 @@ package
 			var checkpoint:Entity = collide("checkpoint", x, y);
 			
 			if (checkpoint) {
-				world.remove(checkpoint);
-				
-				for each (e in Level(world).walls) {
-					if (e.active) continue;
-					e.active = true;
-					Level(world).refocus();
-					break;
-				}
+				Level(world).hitCheckpoint(checkpoint);
 			}
 		}
 	}
