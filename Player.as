@@ -9,6 +9,8 @@ package
 	
 	public class Player extends Entity
 	{
+		public var moveCounter:int = 0;
+		
 		public function Player (_x:int, _y:int, c:uint)
 		{
 			x = _x;
@@ -34,10 +36,28 @@ package
 				var dy:int = int(Input.pressed(Key.DOWN)) - int(Input.pressed(Key.UP));
 			}
 			
-			if (!dx && ! dy) return;
+			if (!dx && ! dy) {
+				dx = int(Input.check(Key.RIGHT)) - int(Input.check(Key.LEFT));
+				dy = int(Input.check(Key.DOWN)) - int(Input.check(Key.UP));
+				
+				if ((! dx && ! dy) || (dx && dy)) {
+					moveCounter = 0;
+					return;
+				}
+				
+				moveCounter++;
+				
+				if (moveCounter < 10) {
+					return;
+				}
+				
+				moveCounter -= 10;
+			} else {
+				moveCounter = 0;
+			}
 			
 			if (collide("lava", x+dx, y+dy)) {
-				return
+				return;
 			}
 			
 			var wall:Pushable = collide("solid", x+dx, y+dy) as Pushable;
