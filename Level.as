@@ -20,6 +20,8 @@ package
 		
 		public static var saveFile:Object;
 		
+		public var player:Player;
+		
 		public function Level ()
 		{
 			if (! saveFile) saveFile = {walls: [], checkpoints: []};
@@ -31,6 +33,7 @@ package
 			var floorColor:uint = data.getPixel(0,0);
 			var playerColor:uint = data.getPixel(1,0);
 			var checkpointColor:uint = data.getPixel(2,0);
+			var lavaColor:uint = data.getPixel(3,0);
 			var replaceColor:uint = data.getPixel(0,1);
 			
 			walls = [];
@@ -39,11 +42,10 @@ package
 			var entityData:Object;
 			var maskData:BitmapData;
 			
-			var p:Point;
 			var c:uint;
 			
 			for (var i:int = 0; i < data.width; i++) {
-				jLoop: for (var j:int = 0; j < data.height; j++) {
+				for (var j:int = 0; j < data.height; j++) {
 					c = data.getPixel(i, j);
 					
 					if (i <= 2 && j == 0) {
@@ -54,21 +56,11 @@ package
 						continue;
 					}
 					else if (c == playerColor) {
-						if (saveFile.checkpoints.length) {
-							p = saveFile.checkpoints[saveFile.checkpoints.length - 1];
-							add(new Player(p.x, p.y, c));
-						} else {
-							add(new Player(i, j, c));
-						}
-						
+						player = new Player(i, j, c);
+						add(player);
 						continue;
 					}
 					else if (c == checkpointColor) {
-						for each (p in saveFile.checkpoints) {
-							if (p.x == i && p.y == j) {
-								continue jLoop;
-							}
-						}
 						add(new Checkpoint(i, j, c));
 						continue;
 					}
@@ -76,7 +68,10 @@ package
 					if (! lookup[c]) {
 						maskData = new BitmapData(data.width, data.height, true, 0x0);
 						lookup[c] = maskData;
-						walls.push(maskData);
+						
+						if (c != lavaColor) {
+							walls.push(maskData);
+						}
 					}
 					
 					lookup[c].setPixel32(i, j, 0xFF000000 | c);
@@ -90,16 +85,18 @@ package
 				var wall:Pushable = new Pushable(maskData);
 				add(wall);
 				walls[i] = wall;
-				
-				p = saveFile.walls[i];
-				
-				if (p) {
-					wall.x = p.x;
-					wall.y = p.y;
-					wall.active = true;
-				}
 			}
 			
+			var lava:Entity = new Entity;
+			lava.layer = 2;
+			lava.type = "lava";
+			lava.graphic = new Stamp(lookup[lavaColor]);
+			lava.mask = new Pixelmask(lookup[lavaColor]);
+			
+			add(lava);
+			
+			updateLists();
+			resetState();
 		}
 		
 		private static var loading:Boolean = false;
@@ -167,6 +164,34 @@ package
 				var tweenTime:int = 32;
 				
 				FP.tween(FP.screen, {scale: scale, x: screenX, y: screenY}, tweenTime);
+			}
+		}
+		
+		public function resetState():void
+		{
+			var i:int;
+			var p:Point;
+			
+			for (i = 0; i < walls.length; i++) {
+				p = saveFile.walls[i];
+				
+				if (p) {
+					var wall:Pushable = walls[i];
+					wall.x = p.x;
+					wall.y = p.y;
+					wall.active = true;
+				}
+			}
+			
+			for each (p in saveFile.checkpoints) {
+				var checkpoint:Entity = collidePoint("checkpoint", p.x, p.y);
+				
+				if (checkpoint) {
+					remove(checkpoint);
+				}
+				
+				player.x = p.x;
+				player.y = p.y;
 			}
 		}
 		

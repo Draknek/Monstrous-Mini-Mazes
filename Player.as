@@ -36,6 +36,10 @@ package
 			
 			if (!dx && ! dy) return;
 			
+			if (collide("lava", x+dx, y+dy)) {
+				return
+			}
+			
 			var wall:Pushable = collide("solid", x+dx, y+dy) as Pushable;
 			
 			if (! collidable) wall = null;
