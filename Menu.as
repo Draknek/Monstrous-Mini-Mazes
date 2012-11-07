@@ -45,8 +45,13 @@ package
 		{
 			Input.mouseCursor = "auto";
 			
+			if (Input.pressed(Key.SPACE) || Input.pressed(Key.ENTER)) {
+				gotoLevel();
+			}
+			
 			super.update();
 		}
+		
 		public override function render (): void
 		{
 			super.render();
