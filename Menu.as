@@ -31,7 +31,9 @@ package
 		
 		public override function begin (): void
 		{
-			
+			FP.screen.scale = 8;
+			FP.screen.x = 0;
+			FP.screen.y = 0;
 		}
 		
 		public override function end (): void
