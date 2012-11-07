@@ -57,9 +57,9 @@ package
 					
 					if (c == fakeLavaColor) {
 						if (doublePixel) {
-							if (data.getPixel(i-1, j) == data.getPixel(i+1, j)) {
-								c = data.getPixel(i-1, j);
-							} else {
+							c = data.getPixel(i-1, j);
+							
+							if (c == lavaColor || c != data.getPixel(i+1, j)) {
 								c = data.getPixel(i, j-1);
 							}
 						} else {
