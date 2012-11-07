@@ -34,6 +34,7 @@ package
 			var playerColor:uint = data.getPixel(1,0);
 			var checkpointColor:uint = data.getPixel(2,0);
 			var lavaColor:uint = data.getPixel(3,0);
+			var fakeLavaColor:uint = data.getPixel(4,0);
 			var replaceColor:uint = data.getPixel(0,1);
 			
 			walls = [];
@@ -44,12 +45,28 @@ package
 			
 			var c:uint;
 			
+			var doublePixel:Boolean = false;
+			
 			for (var i:int = 0; i < data.width; i++) {
 				for (var j:int = 0; j < data.height; j++) {
 					c = data.getPixel(i, j);
 					
 					if (i <= 2 && j == 0) {
 						c = replaceColor;
+					}
+					
+					if (c == fakeLavaColor) {
+						if (doublePixel) {
+							if (data.getPixel(i-1, j) == data.getPixel(i+1, j)) {
+								c = data.getPixel(i-1, j);
+							} else {
+								c = data.getPixel(i, j-1);
+							}
+						} else {
+							c = lavaColor;
+						}
+						
+						doublePixel = ! doublePixel;
 					}
 					
 					if (c == floorColor) {
@@ -75,6 +92,11 @@ package
 					}
 					
 					lookup[c].setPixel32(i, j, 0xFF000000 | c);
+					
+					if (doublePixel) {
+						// Do it again...
+						j--;
+					}
 				}
 			}
 			
