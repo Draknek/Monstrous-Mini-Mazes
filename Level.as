@@ -59,7 +59,7 @@ package
 						if (doublePixel) {
 							c = data.getPixel(i-1, j);
 							
-							if (c == lavaColor || c != data.getPixel(i+1, j)) {
+							if (c == lavaColor || c == floorColor || c != data.getPixel(i+1, j)) {
 								c = data.getPixel(i, j-1);
 							}
 						} else {
