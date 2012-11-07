@@ -84,6 +84,8 @@ package
 			if (checkpoint) {
 				Level(world).hitCheckpoint(checkpoint);
 			}
+			
+			Audio.playNote();
 		}
 	}
 }

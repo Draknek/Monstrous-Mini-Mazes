@@ -22,6 +22,8 @@ package
 			Text.font = "amiga";
 			Text.size = 8;
 			
+			Audio.init(this);
+			
 			//FP.console.enable();
 			
 			FP.world = new Level();
