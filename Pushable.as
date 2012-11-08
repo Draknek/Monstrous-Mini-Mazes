@@ -13,7 +13,7 @@ package
 		
 		public function Pushable (data:BitmapData)
 		{
-			graphic = new Stamp(data);
+			graphic = new Image(data);
 			mask = new Pixelmask(data);
 			
 			type = "solid";

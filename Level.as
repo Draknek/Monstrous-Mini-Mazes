@@ -51,7 +51,7 @@ package
 				for (var j:int = 0; j < data.height; j++) {
 					c = data.getPixel(i, j);
 					
-					if (i <= 2 && j == 0) {
+					if (i <= 10 && j == 0) {
 						c = replaceColor;
 					}
 					
@@ -100,7 +100,7 @@ package
 				}
 			}
 			
-			walls.reverse();
+			sortWalls();
 			
 			for (i = 0; i < walls.length; i++) {
 				maskData = walls[i];
@@ -119,6 +119,11 @@ package
 			
 			updateLists();
 			resetState();
+		}
+		
+		private function sortWalls ():void
+		{
+			walls.reverse();
 		}
 		
 		private static var loading:Boolean = false;
@@ -147,19 +152,46 @@ package
 			loading = true;
 		}
 		
-		public function refocus (instant:Boolean = false): void
+		public function refocus (instant:Boolean = false): Boolean
 		{
 			var e:Pushable;
 			
+			var rect:Rectangle;
+			
+			FP.point.x = player.x;
+			FP.point.y = player.y;
+			FP.point2.x = player.x;
+			FP.point2.y = player.y;
+			
 			for each (e in walls) {
-				if (! e.active) break;
+				if (! e.active) continue;
+				
+				rect = Pixelmask(e.mask).data.getColorBoundsRect(0xFF000000, 0xFF000000);
+				
+				FP.point.x = Math.min(FP.point.x, rect.x);
+				FP.point.y = Math.min(FP.point.y, rect.y);
+				
+				FP.point2.x = Math.max(FP.point2.x, rect.x+rect.width);
+				FP.point2.y = Math.max(FP.point2.y, rect.y+rect.height);
 			}
 			
-			if (! e) return;
+			var found:Boolean = false;
 			
-			var bitmap:BitmapData = Pixelmask(e.mask).data;
+			for each (e in walls) {
+				if (e.active) continue;
+				
+				rect = Pixelmask(e.mask).data.getColorBoundsRect(0xFF000000, 0xFF000000);
+				
+				if (rect.x <= FP.point.x && rect.y <= FP.point.y
+					&& rect.x+rect.width >= FP.point2.x
+					&& rect.y+rect.height >= FP.point2.y)
+				{
+					found = true;
+					break;
+				}
+			}
 			
-			var rect:Rectangle = bitmap.getColorBoundsRect(0xFF000000, 0xFF000000);
+			if (! found) return false;
 			
 			rect.x += 1;
 			rect.y += 1;
@@ -171,6 +203,8 @@ package
 			var borderY:int;
 			
 			var scale:Number = (FP.stage.stageWidth - borderX*2) / rect.width;
+			
+			if (FP.screen.scale == scale) return false;
 			
 			borderX = FP.stage.stageWidth - rect.width*scale;
 			borderY = FP.stage.stageHeight - rect.height*scale;
@@ -185,8 +219,10 @@ package
 			} else {
 				var tweenTime:int = 32;
 				
-				FP.tween(FP.screen, {scale: scale, x: screenX, y: screenY}, tweenTime);
+				FP.tween(FP.screen, {scale: scale, x: screenX, y: screenY}, tweenTime, {delay: 16});
 			}
+			
+			return true;
 		}
 		
 		public function resetState():void
@@ -229,10 +265,27 @@ package
 				
 				if (e.active) continue;
 				
-				e.active = true;
-				refocus();
+				var rect:Rectangle = Pixelmask(e.mask).data.getColorBoundsRect(0xFF000000, 0xFF000000);
 				
-				break;
+				if (rect.x <= checkpoint.x && rect.y <= checkpoint.y
+					&& rect.x+rect.width >= checkpoint.x
+					&& rect.y+rect.height >= checkpoint.y)
+				{
+					e.active = true;
+					
+					var changedScale:Boolean = refocus();
+					
+					function highlightWall ():void
+					{
+						Image(e.graphic).tintMode = 1.0;
+						
+						FP.tween(e.graphic, {tintMode: 0.0}, 32);
+					}
+					
+					highlightWall();
+					
+					break;
+				}
 			}
 		}
 		
