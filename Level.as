@@ -259,11 +259,17 @@ package
 			
 			saveFile.checkpoints.push(new Point(checkpoint.x, checkpoint.y));
 			
+			var found:Boolean = false;
+			
 			for (var i:int = 0; i < walls.length; i++) {
 				var e:Pushable = walls[i];
-				saveFile.walls[i] = new Point(e.x, e.y);
 				
-				if (e.active) continue;
+				if (e.active) {
+					saveFile.walls[i] = new Point(e.x, e.y);
+					continue;
+				}
+				
+				if (found) continue;
 				
 				var rect:Rectangle = Pixelmask(e.mask).data.getColorBoundsRect(0xFF000000, 0xFF000000);
 				
@@ -271,6 +277,8 @@ package
 					&& rect.x+rect.width >= checkpoint.x
 					&& rect.y+rect.height >= checkpoint.y)
 				{
+					saveFile.walls[i] = new Point(0,0);
+					
 					e.active = true;
 					
 					var changedScale:Boolean = refocus();
@@ -284,7 +292,7 @@ package
 					
 					highlightWall();
 					
-					break;
+					found = true;
 				}
 			}
 		}
