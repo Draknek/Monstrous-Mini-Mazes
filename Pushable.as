@@ -6,15 +6,20 @@ package
 	import net.flashpunk.utils.*;
 	
 	import flash.display.*;
+	import flash.geom.*;
 	
 	public class Pushable extends Entity
 	{
 		public var moving:Boolean;
 		
+		public var bounds:Rectangle;
+		
 		public function Pushable (data:BitmapData)
 		{
 			graphic = new Image(data);
 			mask = new Pixelmask(data);
+			
+			bounds = data.getColorBoundsRect(0xFF000000, 0xFF000000);
 			
 			type = "solid";
 			

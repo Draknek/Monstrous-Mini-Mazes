@@ -166,7 +166,7 @@ package
 			for each (e in walls) {
 				if (! e.active) continue;
 				
-				rect = Pixelmask(e.mask).data.getColorBoundsRect(0xFF000000, 0xFF000000);
+				rect = e.bounds;
 				
 				FP.point.x = Math.min(FP.point.x, rect.x);
 				FP.point.y = Math.min(FP.point.y, rect.y);
@@ -180,7 +180,7 @@ package
 			for each (e in walls) {
 				if (e.active) continue;
 				
-				rect = Pixelmask(e.mask).data.getColorBoundsRect(0xFF000000, 0xFF000000);
+				rect = e.bounds;
 				
 				if (rect.x <= FP.point.x && rect.y <= FP.point.y
 					&& rect.x+rect.width >= FP.point2.x
@@ -271,7 +271,7 @@ package
 				
 				if (found) continue;
 				
-				var rect:Rectangle = Pixelmask(e.mask).data.getColorBoundsRect(0xFF000000, 0xFF000000);
+				var rect:Rectangle = e.bounds;
 				
 				if (rect.x <= checkpoint.x && rect.y <= checkpoint.y
 					&& rect.x+rect.width >= checkpoint.x
