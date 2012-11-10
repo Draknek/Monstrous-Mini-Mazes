@@ -217,6 +217,8 @@ package
 			
 			if (! found) return false;
 			
+			rect = rect.clone();
+			
 			rect.x += 1;
 			rect.y += 1;
 			

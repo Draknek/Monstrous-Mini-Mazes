@@ -14,8 +14,12 @@ package
 		
 		public var bounds:Rectangle;
 		
-		public function Pushable (data:BitmapData)
+		public var data:BitmapData;
+		
+		public function Pushable (_data:BitmapData)
 		{
+			this.data = _data;
+			
 			graphic = new Image(data);
 			mask = new Pixelmask(data);
 			
@@ -41,12 +45,23 @@ package
 			for each (var e:Pushable in thisCollides) {
 				if (e.moving) continue;
 				
+				if (! e.active) {
+					moving = false;
+					makeFeedback(e, dx, dy);
+					continue;
+				}
+				
 				var thatCollides:Array = e.getPushList(dx, dy);
 				
-				if (! thatCollides) return null;
+				if (! thatCollides) {
+					moving = false;
+					continue;
+				}
 				
 				allOtherCollides.push(thatCollides);
 			}
+			
+			if (! moving) return null;
 			
 			thisCollides.push(this);
 			
@@ -59,6 +74,32 @@ package
 			}
 			
 			return thisCollides;
+		}
+		
+		private function makeFeedback (that:Pushable, dx:int, dy:int):void
+		{
+			for (var i:int = 0; i < bounds.width; i++) {
+				for (var j:int = 0; j < bounds.height; j++) {
+					var ix:int = bounds.x + i;
+					var iy:int = bounds.y + j;
+					
+					var c:uint = this.data.getPixel32(ix, iy);
+					
+					if ((c & 0xFF000000) == 0x0) continue;
+					
+					ix += this.x + dx - that.x;
+					iy += this.y + dy - that.y;
+					
+					c = that.data.getPixel32(ix, iy);
+					
+					if ((c & 0xFF000000) == 0x0) continue;
+					
+					ix += that.x;
+					iy += that.y;
+					
+					Level.feedback.setPixel32(ix, iy, 0xFFFFFFFF);
+				}
+			}
 		}
 		
 		public function move (dx:int, dy:int): void

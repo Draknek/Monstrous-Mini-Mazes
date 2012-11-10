@@ -71,7 +71,10 @@ package
 			if (wall) {
 				var pushList:Array = wall.getPushList(dx, dy);
 				
-				if (! pushList) return;
+				if (! pushList) {
+					Level.updateFeedback();
+					return;
+				}
 				
 				for each (var e:Pushable in pushList) {
 					e.x += dx;
