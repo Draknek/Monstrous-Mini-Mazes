@@ -22,6 +22,14 @@ package
 		
 		public var player:Player;
 		
+		public static var feedback:BitmapData;
+		public static var feedbackImage:Image;
+		
+		public static var floorColor:uint;
+		public static var playerColor:uint;
+		public static var checkpointColor:uint;
+		public static var lavaColor:uint;
+		
 		public function Level ()
 		{
 			if (! saveFile) saveFile = {walls: [], checkpoints: []};
@@ -30,12 +38,13 @@ package
 			
 			var data:BitmapData = levelData;
 			
-			var floorColor:uint = data.getPixel(0,0);
-			var playerColor:uint = data.getPixel(1,0);
-			var checkpointColor:uint = data.getPixel(2,0);
-			var lavaColor:uint = data.getPixel(3,0);
-			var fakeLavaColor:uint = data.getPixel(4,0);
-			var replaceColor:uint = data.getPixel(0,1);
+			floorColor = data.getPixel32(0,0);
+			playerColor = data.getPixel32(1,0);
+			checkpointColor = data.getPixel32(2,0);
+			lavaColor = data.getPixel32(3,0);
+			
+			var fakeLavaColor:uint = data.getPixel32(4,0);
+			var replaceColor:uint = data.getPixel32(0,1);
 			
 			walls = [];
 			var lookup:Object = [];
@@ -49,7 +58,7 @@ package
 			
 			for (var i:int = 0; i < data.width; i++) {
 				for (var j:int = 0; j < data.height; j++) {
-					c = data.getPixel(i, j);
+					c = data.getPixel32(i, j);
 					
 					if (i <= 10 && j == 0) {
 						c = replaceColor;
@@ -57,10 +66,10 @@ package
 					
 					if (c == fakeLavaColor) {
 						if (doublePixel) {
-							c = data.getPixel(i-1, j);
+							c = data.getPixel32(i-1, j);
 							
-							if (c == lavaColor || c == floorColor || c != data.getPixel(i+1, j)) {
-								c = data.getPixel(i, j-1);
+							if (c == lavaColor || c == floorColor || c != data.getPixel32(i+1, j)) {
+								c = data.getPixel32(i, j-1);
 							}
 						} else {
 							c = lavaColor;
@@ -117,8 +126,23 @@ package
 			
 			add(lava);
 			
+			feedback = new BitmapData(data.width, data.height, true, 0x0);
+			feedbackImage = new Image(feedback);
+			addGraphic(feedbackImage, -10);
+			
 			updateLists();
 			resetState();
+		}
+		
+		public static function clearFeedback ():void
+		{
+			feedback.fillRect(feedback.rect, 0x0);
+		}
+		
+		public static function updateFeedback ():void
+		{
+			feedbackImage.updateBuffer();
+			feedbackImage.alpha = 1.0;
 		}
 		
 		private function sortWalls ():void
@@ -323,6 +347,9 @@ package
 		
 		public override function render (): void
 		{
+			feedbackImage.alpha -= 0.1;
+			if (feedbackImage.alpha < 0) feedbackImage.alpha = 0;
+			
 			super.render();
 		}
 	}

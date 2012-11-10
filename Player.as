@@ -56,7 +56,11 @@ package
 				moveCounter = 0;
 			}
 			
+			Level.clearFeedback();
+			
 			if (collidable && collide("lava", x+dx, y+dy)) {
+				Level.feedback.setPixel32(x+dx, y+dy, Level.lavaColor);
+				Level.updateFeedback();
 				return;
 			}
 			
