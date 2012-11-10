@@ -28,6 +28,7 @@ package
 		{
 			if (Input.pressed(Key.SPACE)) {
 				collidable = ! collidable;
+				moveCounter = 0;
 			}
 			
 			var dx:int = int(Input.pressed(Key.RIGHT)) - int(Input.pressed(Key.LEFT));
@@ -61,6 +62,7 @@ package
 			if (collidable && collide("lava", x+dx, y+dy)) {
 				Level.feedback.setPixel32(x+dx, y+dy, Level.lavaColor);
 				Level.updateFeedback();
+				moveCounter = -1000000;
 				return;
 			}
 			
@@ -73,6 +75,7 @@ package
 				
 				if (! pushList) {
 					Level.updateFeedback();
+					moveCounter = -1000000;
 					return;
 				}
 				

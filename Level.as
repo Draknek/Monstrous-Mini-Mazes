@@ -349,7 +349,7 @@ package
 		
 		public override function render (): void
 		{
-			feedbackImage.alpha -= 0.1;
+			feedbackImage.alpha -= 1/16;
 			if (feedbackImage.alpha < 0) feedbackImage.alpha = 0;
 			
 			super.render();
