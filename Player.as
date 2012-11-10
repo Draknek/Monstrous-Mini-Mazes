@@ -56,7 +56,7 @@ package
 				moveCounter = 0;
 			}
 			
-			if (collide("lava", x+dx, y+dy)) {
+			if (collidable && collide("lava", x+dx, y+dy)) {
 				return;
 			}
 			
