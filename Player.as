@@ -26,7 +26,7 @@ package
 		
 		public override function update (): void
 		{
-			if (Input.pressed(Key.SPACE)) {
+			if (Main.debugMode && Input.pressed(Key.SPACE)) {
 				collidable = ! collidable;
 				moveCounter = 0;
 			}

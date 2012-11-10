@@ -13,6 +13,8 @@ package
 		[Embed(source = 'fonts/amiga4ever pro2.ttf', embedAsCFF="false", fontFamily = 'amiga')]
 		public static const FONT2:Class;
 		
+		public static var debugMode:Boolean = false;
+		
 		public function Main () 
 		{
 			super(80, 60, 60, true);
@@ -25,8 +27,6 @@ package
 			Audio.init(this);
 			
 			//FP.console.enable();
-			
-			FP.world = new Level();
 		}
 		
 		public override function init (): void
@@ -34,6 +34,8 @@ package
 			sitelock("draknek.org");
 			
 			super.init();
+			
+			FP.world = debugMode ? new Level() : new Menu();
 		}
 		
 		public override function update (): void
@@ -51,7 +53,10 @@ package
 			var url:String = FP.stage.loaderInfo.url;
 			var startCheck:int = url.indexOf('://' ) + 3;
 			
-			if (url.substr(0, startCheck) == 'file://') return true;
+			if (url.substr(0, startCheck) == 'file://') {
+				debugMode = true;
+				return true;
+			}
 			
 			var domainLen:int = url.indexOf('/', startCheck) - startCheck;
 			var host:String = url.substr(startCheck, domainLen);
