@@ -30,6 +30,8 @@ package
 		public static var checkpointColor:uint;
 		public static var lavaColor:uint;
 		
+		public var visibleBounds:Rectangle;
+		
 		public function Level ()
 		{
 			if (! saveFile) saveFile = {walls: [], checkpoints: []};
@@ -217,6 +219,8 @@ package
 			
 			if (! found) return false;
 			
+			visibleBounds = rect;
+			
 			rect = rect.clone();
 			
 			rect.x += 1;
@@ -345,6 +349,12 @@ package
 				wall.moving = false;
 			}
 			super.update();
+			
+			if (player.x < visibleBounds.x || player.x >= visibleBounds.x + visibleBounds.width
+				|| player.y < visibleBounds.y || player.y >= visibleBounds.y + visibleBounds.height) {
+				saveFile = null;
+				FP.world = new Congrats;
+			}
 		}
 		
 		public override function render (): void
