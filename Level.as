@@ -335,7 +335,11 @@ package
 		public override function update (): void
 		{
 			if (Input.pressed(Key.R)) {
-				checkForNewLevel();
+				if (Main.debugMode) {
+					checkForNewLevel();
+				} else {
+					resetState();
+				}
 				return;
 			}
 			
