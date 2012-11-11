@@ -16,7 +16,7 @@ package
 		
 		public static var levelData:BitmapData;
 		
-		public var walls:Array;
+		public var pushables:Array;
 		
 		public static var saveFile:Object;
 		
@@ -37,7 +37,7 @@ package
 		
 		public function Level ()
 		{
-			if (! saveFile) saveFile = {walls: [], checkpoints: []};
+			if (! saveFile) saveFile = {pushables: [], checkpoints: []};
 			
 			checkForNewLevel();
 			
@@ -52,8 +52,8 @@ package
 			
 			var replaceColor:uint = data.getPixel32(0,1);
 			
-			walls = [];
-			var lookup:Object = [];
+			pushables = [];
+			var lookup:Array = [];
 			
 			var entityData:Object;
 			var maskData:BitmapData;
@@ -97,8 +97,8 @@ package
 						maskData = new BitmapData(data.width, data.height, true, 0x0);
 						lookup[c] = maskData;
 						
-						if (c != lavaColor && c != movingFloorColor) {
-							walls.push(maskData);
+						if (c != lavaColor) {
+							pushables.push(maskData);
 						}
 					}
 					
@@ -111,13 +111,18 @@ package
 				}
 			}
 			
-			sortWalls();
+			sortPushables();
 			
-			for (i = 0; i < walls.length; i++) {
-				maskData = walls[i];
+			for (i = 0; i < pushables.length; i++) {
+				maskData = pushables[i];
 				var wall:Pushable = new Pushable(maskData);
 				add(wall);
-				walls[i] = wall;
+				pushables[i] = wall;
+				
+				if (lookup[movingFloorColor] == maskData) {
+					wall.type = "floor";
+					wall.active = true;
+				}
 			}
 			
 			var lava:Entity = new Entity;
@@ -127,13 +132,6 @@ package
 			lava.mask = new Pixelmask(lookup[lavaColor]);
 			
 			add(lava);
-			
-			if (lookup[movingFloorColor]) {
-				movingFloor = new Pushable(lookup[movingFloorColor]);
-				movingFloor.type = "floor";
-				movingFloor.active = true;
-				add(movingFloor);
-			}
 			
 			feedback = new BitmapData(data.width, data.height, true, 0x0);
 			feedbackImage = new Image(feedback);
@@ -183,9 +181,9 @@ package
 			feedbackImage.alpha = 1.0;
 		}
 		
-		private function sortWalls ():void
+		private function sortPushables ():void
 		{
-			walls.reverse();
+			pushables.reverse();
 		}
 		
 		private static var loading:Boolean = false;
@@ -225,8 +223,8 @@ package
 			FP.point2.x = player.x;
 			FP.point2.y = player.y;
 			
-			for each (e in walls) {
-				if (! e.active) continue;
+			for each (e in pushables) {
+				if (! e.active || e.type == "floor") continue;
 				
 				rect = e.bounds;
 				
@@ -239,8 +237,8 @@ package
 			
 			var found:Boolean = false;
 			
-			for each (e in walls) {
-				if (e.active) continue;
+			for each (e in pushables) {
+				if (e.active || e.type == "floor") continue;
 				
 				rect = e.bounds;
 				
@@ -296,11 +294,11 @@ package
 			var i:int;
 			var p:Point;
 			
-			for (i = 0; i < walls.length; i++) {
-				p = saveFile.walls[i];
+			for (i = 0; i < pushables.length; i++) {
+				p = saveFile.pushables[i];
 				
 				if (p) {
-					var wall:Pushable = walls[i];
+					var wall:Pushable = pushables[i];
 					wall.x = p.x;
 					wall.y = p.y;
 					wall.active = true;
@@ -327,11 +325,11 @@ package
 			
 			var found:Boolean = false;
 			
-			for (var i:int = 0; i < walls.length; i++) {
-				var e:Pushable = walls[i];
+			for (var i:int = 0; i < pushables.length; i++) {
+				var e:Pushable = pushables[i];
 				
 				if (e.active) {
-					saveFile.walls[i] = new Point(e.x, e.y);
+					saveFile.pushables[i] = new Point(e.x, e.y);
 					continue;
 				}
 				
@@ -343,7 +341,7 @@ package
 					&& rect.x+rect.width >= checkpoint.x
 					&& rect.y+rect.height >= checkpoint.y)
 				{
-					saveFile.walls[i] = new Point(0,0);
+					saveFile.pushables[i] = new Point(0,0);
 					
 					e.active = true;
 					
@@ -385,10 +383,9 @@ package
 				return;
 			}
 			
-			for each (var wall:Pushable in walls) {
+			for each (var wall:Pushable in pushables) {
 				wall.moving = false;
 			}
-			if (movingFloor) movingFloor.moving = false;
 			super.update();
 			
 			if (player.x < visibleBounds.x || player.x >= visibleBounds.x + visibleBounds.width
