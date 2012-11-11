@@ -57,18 +57,31 @@ package
 				moveCounter = 0;
 			}
 			
+			var wall:Pushable;
+			var currentFloor:Entity;
+			
 			Level.clearFeedback();
 			
 			if (collidable && collide("lava", x+dx, y+dy) && ! collide("floor", x+dx, y+dy)) {
-				if (! collide("floor", x, y)) {
-					Level.feedback.setPixel32(x+dx, y+dy, Level.lavaColor);
-					Level.updateFeedback();
+				wall = collide("solid", x+dx, y+dy) as Pushable;
+				
+				if (wall) {
+					currentFloor = collide("floor", x, y);
+					
+					if (currentFloor && currentFloor != wall.collide("floor", wall.x+dx, wall.y+dy)) {
+						currentFloor = null;
+					}
+					
+					if (! currentFloor) {
+						Level.feedback.setPixel32(x+dx, y+dy, Level.lavaColor);
+						Level.updateFeedback();
+					}
 				}
 				moveCounter = -1000000;
 				return;
 			}
 			
-			var wall:Pushable = collide("solid", x+dx, y+dy) as Pushable;
+			wall = collide("solid", x+dx, y+dy) as Pushable;
 			
 			if (collidable && wall) {
 				var pushList:Array = wall.getPushList(dx, dy);
@@ -79,7 +92,7 @@ package
 					return;
 				}
 				
-				var currentFloor:Entity = collide("floor", x, y);
+				currentFloor = collide("floor", x, y);
 				
 				if (currentFloor && pushList.indexOf(currentFloor) != -1) {
 					return;
