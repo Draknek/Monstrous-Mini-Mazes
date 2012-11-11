@@ -356,6 +356,16 @@ package
 			
 			if (player.x < visibleBounds.x || player.x >= visibleBounds.x + visibleBounds.width
 				|| player.y < visibleBounds.y || player.y >= visibleBounds.y + visibleBounds.height) {
+				if (Main.debugMode && classCount(Checkpoint) != 0) {
+					var a:Array = [];
+					collideRectInto("checkpoint", visibleBounds.x, visibleBounds.y, visibleBounds.width, visibleBounds.height, a);
+					
+					for each (var checkpoint:Checkpoint in a) {
+						hitCheckpoint(checkpoint);
+					}
+					
+					return;
+				}
 				saveFile = null;
 				FP.world = new Congrats;
 			}
