@@ -36,17 +36,20 @@ package
 			
 			moving = true;
 			
+			var hitSomething:Boolean = false;
+			
 			var allOtherCollides:Array = [];
 			
 			var thisCollides:Array = [];
 			
 			collideInto("solid", x+dx, y+dy, thisCollides);
+			collideInto("floor", x+dx, y+dy, thisCollides);
 			
 			for each (var e:Pushable in thisCollides) {
 				if (e.moving) continue;
 				
 				if (! e.active) {
-					moving = false;
+					hitSomething = true;
 					makeFeedback(e, dx, dy);
 					continue;
 				}
@@ -54,14 +57,14 @@ package
 				var thatCollides:Array = e.getPushList(dx, dy);
 				
 				if (! thatCollides) {
-					moving = false;
+					hitSomething = true;
 					continue;
 				}
 				
 				allOtherCollides.push(thatCollides);
 			}
 			
-			if (! moving) return null;
+			if (hitSomething) return null;
 			
 			thisCollides.push(this);
 			

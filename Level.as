@@ -21,6 +21,7 @@ package
 		public static var saveFile:Object;
 		
 		public var player:Player;
+		public var movingFloor:Pushable;
 		
 		public static var feedback:BitmapData;
 		public static var feedbackImage:Image;
@@ -29,6 +30,8 @@ package
 		public static var playerColor:uint;
 		public static var checkpointColor:uint;
 		public static var lavaColor:uint;
+		public static var fakeLavaColor:uint;
+		public static var movingFloorColor:uint;
 		
 		public var visibleBounds:Rectangle;
 		
@@ -44,8 +47,9 @@ package
 			playerColor = data.getPixel32(1,0);
 			checkpointColor = data.getPixel32(2,0);
 			lavaColor = data.getPixel32(3,0);
+			fakeLavaColor = data.getPixel32(4,0);
+			movingFloorColor = data.getPixel32(5,0);
 			
-			var fakeLavaColor:uint = data.getPixel32(4,0);
 			var replaceColor:uint = data.getPixel32(0,1);
 			
 			walls = [];
@@ -97,7 +101,7 @@ package
 						maskData = new BitmapData(data.width, data.height, true, 0x0);
 						lookup[c] = maskData;
 						
-						if (c != lavaColor) {
+						if (c != lavaColor && c != movingFloorColor) {
 							walls.push(maskData);
 						}
 					}
@@ -127,6 +131,13 @@ package
 			lava.mask = new Pixelmask(lookup[lavaColor]);
 			
 			add(lava);
+			
+			if (lookup[movingFloorColor]) {
+				movingFloor = new Pushable(lookup[movingFloorColor]);
+				movingFloor.type = "floor";
+				movingFloor.active = true;
+				add(movingFloor);
+			}
 			
 			feedback = new BitmapData(data.width, data.height, true, 0x0);
 			feedbackImage = new Image(feedback);
@@ -352,6 +363,7 @@ package
 			for each (var wall:Pushable in walls) {
 				wall.moving = false;
 			}
+			if (movingFloor) movingFloor.moving = false;
 			super.update();
 			
 			if (player.x < visibleBounds.x || player.x >= visibleBounds.x + visibleBounds.width
