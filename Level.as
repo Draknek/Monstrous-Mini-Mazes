@@ -72,11 +72,7 @@ package
 					
 					if (c == fakeLavaColor) {
 						if (doublePixel) {
-							c = data.getPixel32(i-1, j);
-							
-							if (c == lavaColor || c == floorColor || c != data.getPixel32(i+1, j)) {
-								c = data.getPixel32(i, j-1);
-							}
+							c = getColorAboveLava(data, i, j);
 						} else {
 							c = lavaColor;
 						}
@@ -145,6 +141,35 @@ package
 			
 			updateLists();
 			resetState();
+		}
+		
+		private static function getColorAboveLava (data:BitmapData, i:int, j:int):uint
+		{
+			var colors:Array = [];
+			
+			colors.push(data.getPixel32(i-1, j));
+			colors.push(data.getPixel32(i+1, j));
+			colors.push(data.getPixel32(i, j-1));
+			colors.push(data.getPixel32(i, j+1));
+			
+			var c:uint;
+			var lastValid:uint;
+			
+			for (i = 0; i < 4; i++) {
+				c = colors[i];
+				
+				if (c == lavaColor || c == floorColor || c == fakeLavaColor) {
+					continue;
+				}
+				
+				lastValid = c;
+				
+				for (j = i+1; j < 4; j++) {
+					if (colors[j] == c) return c;
+				}
+			}
+			
+			return lastValid;
 		}
 		
 		public static function clearFeedback ():void
