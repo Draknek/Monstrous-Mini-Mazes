@@ -20,6 +20,8 @@ package
 			height = 1;
 			
 			type = "checkpoint";
+			
+			layer = -1;
 		}
 	}
 }
