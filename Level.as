@@ -269,6 +269,8 @@ package
 			
 			scale -= 5;
 			
+			if (scale > 40) scale -= 5;
+			
 			if (FP.screen.scale == scale) return false;
 			
 			var borderX:int;
