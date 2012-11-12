@@ -263,12 +263,16 @@ package
 			rect.width -= 2;
 			rect.height -= 2;
 			
-			var borderX:int = 16;
-			var borderY:int;
+			var scale:Number = (FP.stage.stageWidth) / rect.width;
 			
-			var scale:Number = (FP.stage.stageWidth - borderX*2) / rect.width;
+			scale = Math.ceil(scale / 5)*5;
+			
+			scale -= 5;
 			
 			if (FP.screen.scale == scale) return false;
+			
+			var borderX:int;
+			var borderY:int;
 			
 			borderX = FP.stage.stageWidth - rect.width*scale;
 			borderY = FP.stage.stageHeight - rect.height*scale;

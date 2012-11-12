@@ -5,7 +5,6 @@ package
 	import net.flashpunk.graphics.*;
 	import net.flashpunk.utils.*;
 	
-	[SWF(width = "640", height = "480", backgroundColor="#000000")]
 	public class Main extends Engine
 	{
 		[Embed(source = 'fonts/7x5.ttf', embedAsCFF="false", fontFamily = '7x5')]
