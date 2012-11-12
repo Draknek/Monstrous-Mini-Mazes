@@ -9,19 +9,40 @@ package
 	
 	public class Player extends Entity
 	{
+		[Embed(source="images/player.png")] public static const Gfx: Class;
+		
 		public var moveCounter:int = 0;
+		
+		public var sprite:Spritemap;
 		
 		public function Player (_x:int, _y:int, c:uint)
 		{
 			x = _x;
 			y = _y;
 			
-			graphic = new Stamp(new BitmapData(1, 1, false, c));
+			sprite = new Spritemap(Gfx, 5, 6);
+			sprite.relative = false;
+			
+			var framesPerDirection:int = 1;
+			
+			sprite.add("down",  [0*framesPerDirection], 0.1);
+			sprite.add("up",    [1*framesPerDirection], 0.1);
+			sprite.add("left",  [2*framesPerDirection], 0.1);
+			sprite.add("right", [3*framesPerDirection], 0.1);
+			
+			graphic = sprite;
 			
 			width = 1;
 			height = 1;
 			
 			layer = -1;
+		}
+		
+		public override function render (): void
+		{
+			graphic.x = x*Main.TW;
+			graphic.y = y*Main.TW - 1;
+			super.render();
 		}
 		
 		public override function update (): void
@@ -56,6 +77,11 @@ package
 			} else {
 				moveCounter = 0;
 			}
+			
+			if (dx < 0) sprite.play("left");
+			else if (dx > 0) sprite.play("right")
+			else if (dy < 0) sprite.play("up")
+			else if (dy > 0) sprite.play("down")
 			
 			var wall:Pushable;
 			var currentFloor:Entity;

@@ -23,6 +23,9 @@ package
 			graphic = new Image(data);
 			mask = new Pixelmask(data);
 			
+			Image(graphic).scale = Main.TW;
+			graphic.relative = false;
+			
 			bounds = data.getColorBoundsRect(0xFF000000, 0xFF000000);
 			
 			type = "solid";
@@ -115,6 +118,13 @@ package
 			
 			x += dx;
 			y += dy;
+		}
+		
+		public override function render (): void
+		{
+			graphic.x = x*Main.TW;
+			graphic.y = y*Main.TW;
+			super.render();
 		}
 	}
 }

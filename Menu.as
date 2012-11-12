@@ -13,13 +13,14 @@ package
 		{
 			var title:Text = new Text("Monstrous\nMini Mazes", 0, 0, {color: 0x30346d, align: "center"});
 			
-			title.x = (FP.width - title.width + 1)*0.5;
+			title.x = (80 - title.width + 1)*0.5;
 			
 			addGraphic(title);
 			
 			var start:Button = new Button("Start", 0, gotoLevel);
 			
-			start.y = title.height + (FP.height - title.height - start.height)*0.5;
+			start.y = title.height + (60 - title.height - start.height)*0.5;
+			start.x = int((80 - start.width) * 0.5);
 			
 			add(start);
 		}

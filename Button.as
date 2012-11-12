@@ -29,8 +29,6 @@ package
 			type = "button";
 			
 			callback = _callback;
-			
-			x = int((FP.width - width) * 0.5);
 		}
 		
 		public override function update (): void

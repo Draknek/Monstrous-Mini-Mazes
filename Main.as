@@ -12,11 +12,13 @@ package
 		[Embed(source = 'fonts/amiga4ever pro2.ttf', embedAsCFF="false", fontFamily = 'amiga')]
 		public static const FONT2:Class;
 		
+		public static const TW:int = 5;
+		
 		public static var debugMode:Boolean = false;
 		
 		public function Main () 
 		{
-			super(80, 60, 60, true);
+			super(80*TW, 60*TW, 60, true);
 			
 			FP.screen.color = 0xdeeed6;
 			FP.screen.scale = 8;

@@ -9,10 +9,10 @@ package
 	{
 		public function Congrats ()
 		{
-			var text:Text = new Text("Congrats!\nYou escaped\nfrom the\nmonstrous\nmini mazes", 0, 0, {color: 0x30346d, align: "center"});
+			var text:Text = new Text("Congrats!\n\nYou escaped\nfrom the\nmonstrous\nmini mazes", 0, 0, {color: 0x30346d, align: "center"});
 			
-			text.x = (FP.width - text.width + 1)*0.5;
-			text.y = (FP.height - text.height + 1)*0.5;
+			text.x = (105 - text.width + 1)*0.5;
+			text.y = (80 - text.height + 1)*0.5;
 			
 			addGraphic(text);
 		}
@@ -21,7 +21,7 @@ package
 		{
 			Input.mouseCursor = "auto";
 			
-			FP.screen.scale = 8;
+			FP.screen.scale = 6;
 			FP.screen.x = 0;
 			FP.screen.y = 0;
 		}

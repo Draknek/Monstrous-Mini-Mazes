@@ -128,13 +128,15 @@ package
 			var lava:Entity = new Entity;
 			lava.layer = 2;
 			lava.type = "lava";
-			lava.graphic = new Stamp(lookup[lavaColor]);
+			lava.graphic = new Image(lookup[lavaColor]);
+			Image(lava.graphic).scale = Main.TW;
 			lava.mask = new Pixelmask(lookup[lavaColor]);
 			
 			add(lava);
 			
 			feedback = new BitmapData(data.width, data.height, true, 0x0);
 			feedbackImage = new Image(feedback);
+			feedbackImage.scale = Main.TW;
 			addGraphic(feedbackImage, -10);
 			
 			updateLists();
@@ -263,13 +265,18 @@ package
 			rect.width -= 2;
 			rect.height -= 2;
 			
+			rect.x *= Main.TW;
+			rect.y *= Main.TW;
+			rect.width *= Main.TW;
+			rect.height *= Main.TW;
+			
 			var scale:Number = (FP.stage.stageWidth) / rect.width;
 			
-			scale = Math.ceil(scale / 5)*5;
+			scale = Math.ceil(scale);
 			
-			scale -= 5;
+			scale -= 1;
 			
-			if (scale > 40) scale -= 5;
+			if (scale > 8) scale -= 1;
 			
 			if (FP.screen.scale == scale) return false;
 			
