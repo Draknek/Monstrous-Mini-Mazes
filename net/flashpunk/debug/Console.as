@@ -219,7 +219,7 @@ package net.flashpunk.debug
 			_butRead.graphics.drawRoundRectComplex(-20, 0, 100, 20, 0, 0, 20, 20);
 			
 			// Default the display to debug view
-			debug = true;
+			//debug = true;
 			
 			// Set the state to unpaused.
 			paused = false;
