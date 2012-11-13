@@ -21,7 +21,7 @@ package
 		public static var saveFile:Object;
 		
 		public var player:Player;
-		public var movingFloor:Pushable;
+		public var lava:Entity;
 		
 		public static var feedback:BitmapData;
 		public static var feedbackImage:Image;
@@ -115,18 +115,18 @@ package
 			
 			for (i = 0; i < pushables.length; i++) {
 				maskData = pushables[i];
-				var wall:Pushable = new Pushable(maskData);
+				var type:String = null;
+				if (lookup[movingFloorColor] == maskData) {
+					type = "floor";
+				}
+				
+				var wall:Pushable = new Pushable(maskData, type);
 				add(wall);
 				pushables[i] = wall;
-				
-				if (lookup[movingFloorColor] == maskData) {
-					wall.type = "floor";
-					wall.active = true;
-				}
 			}
 			
-			var lava:Entity = new Entity;
-			lava.layer = 2;
+			lava = new Entity;
+			lava.visible = false;
 			lava.type = "lava";
 			lava.graphic = new Image(lookup[lavaColor]);
 			Image(lava.graphic).scale = Main.TW;
@@ -360,14 +360,7 @@ package
 					
 					var changedScale:Boolean = refocus();
 					
-					function highlightWall ():void
-					{
-						Image(e.graphic).tintMode = 1.0;
-						
-						FP.tween(e.graphic, {tintMode: 0.0}, 32);
-					}
-					
-					highlightWall();
+					//e.highlight = 1.0;
 					
 					found = true;
 				}
@@ -420,6 +413,18 @@ package
 		
 		public override function render (): void
 		{
+			lava.render();
+			
+			for (var row:int = visibleBounds.y; row < visibleBounds.y + visibleBounds.height; row++) {
+				for each (var pushable:Pushable in pushables) {
+					pushable.renderRow(row);
+				}
+				
+				if (player.y == row) {
+					player.render();
+				}
+			}
+			
 			feedbackImage.alpha -= 1/16;
 			if (feedbackImage.alpha < 0) feedbackImage.alpha = 0;
 			

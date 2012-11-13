@@ -35,7 +35,7 @@ package
 			width = 1;
 			height = 1;
 			
-			layer = -1;
+			visible = false;
 		}
 		
 		public override function render (): void
