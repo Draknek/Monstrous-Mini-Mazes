@@ -158,6 +158,19 @@ package
 			return thisCollides;
 		}
 		
+		public function activate ():void
+		{
+			active = true;
+			
+			ceiling._source.threshold(ceiling._source, ceiling._sourceRect, FP.zero, "==", colorNoMove, colorCanMove);
+			
+			ceiling.updateBuffer();
+			
+			ceiling.tintMode = 1.0;
+			
+			FP.tween(ceiling, {tintMode: 0.0}, 32);
+		}
+		
 		private function makeFeedback (that:Pushable, dx:int, dy:int):void
 		{
 			for (var i:int = 0; i < bounds.width; i++) {

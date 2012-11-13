@@ -356,11 +356,9 @@ package
 				{
 					saveFile.pushables[i] = new Point(0,0);
 					
-					e.active = true;
+					e.activate();
 					
 					var changedScale:Boolean = refocus();
-					
-					//e.highlight = 1.0;
 					
 					found = true;
 				}
