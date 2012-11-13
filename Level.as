@@ -125,13 +125,7 @@ package
 				pushables[i] = wall;
 			}
 			
-			lava = new Entity;
-			lava.visible = false;
-			lava.type = "lava";
-			lava.graphic = new Image(lookup[lavaColor]);
-			Image(lava.graphic).scale = Main.TW;
-			lava.mask = new Pixelmask(lookup[lavaColor]);
-			
+			lava = new Lava(lookup[lavaColor]);
 			add(lava);
 			
 			feedback = new BitmapData(data.width, data.height, true, 0x0);
@@ -177,10 +171,11 @@ package
 			feedback.fillRect(feedback.rect, 0x0);
 		}
 		
-		public static function updateFeedback ():void
+		public static function updateFeedback (lava:Boolean = false):void
 		{
 			feedbackImage.updateBuffer();
 			feedbackImage.alpha = 1.0;
+			feedbackImage.y = lava ? 3 : 0;
 		}
 		
 		private function sortPushables ():void

@@ -100,7 +100,7 @@ package
 					
 					if (! currentFloor) {
 						Level.feedback.setPixel32(x+dx, y+dy, Level.lavaColor);
-						Level.updateFeedback();
+						Level.updateFeedback(true);
 					}
 				}
 				moveCounter = -1000000;
