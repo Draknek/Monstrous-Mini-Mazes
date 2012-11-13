@@ -419,11 +419,13 @@ package
 				pushable.renderWall();
 			}
 			
+			player.render();
+			
 			for each (pushable in pushables) {
 				pushable.renderCeiling();
 			}
 			
-			player.render();
+			if (! player.collidable) player.render();
 			
 			feedbackImage.alpha -= 1/16;
 			if (feedbackImage.alpha < 0) feedbackImage.alpha = 0;
