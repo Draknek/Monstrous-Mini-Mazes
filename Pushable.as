@@ -45,14 +45,15 @@ package
 					
 					if ((c & 0xFF000000) == 0x0) continue;
 					
-					if (type == "floor") {
+					FP.rect.width = Main.TW;
+					FP.rect.height = Main.TW;
+					FP.rect.x = i*Main.TW;
+					FP.rect.y = j*Main.TW;
 					
+					if (type == "floor") {
+						FP.rect.y += 3;
+						wallBitmap.fillRect(FP.rect, c);
 					} else {
-						FP.rect.width = Main.TW;
-						FP.rect.height = Main.TW;
-						FP.rect.x = i*Main.TW;
-						FP.rect.y = j*Main.TW;
-						
 						ceilingBitmap.fillRect(FP.rect, c);
 						
 						FP.rect.height = 3;
@@ -63,12 +64,19 @@ package
 				}
 			}
 			
-			var bmp:BitmapData = ceilingBitmap;
+			var bmp:BitmapData = (type == "floor") ? wallBitmap : ceilingBitmap;
 			
 			for (i = 0; i < bmp.width; i++) {
 				for (j = 0; j < bmp.height; j++) {
 					ix = i % Main.TW;
 					iy = j % Main.TW;
+					
+					if (type == "floor") {
+						if (iy != 2) continue;
+						if (bmp.getPixel32(i,j+1) || !bmp.getPixel32(i,j)) continue;
+						bmp.setPixel32(i, j, colorNoMove);
+						continue;
+					}
 					
 					if (! (ix == 0 || ix == 4 || iy == 0 || iy == 4)) {
 						continue;
