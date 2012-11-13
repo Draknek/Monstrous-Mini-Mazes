@@ -415,15 +415,17 @@ package
 		{
 			lava.render();
 			
-			for (var row:int = visibleBounds.y; row < visibleBounds.y + visibleBounds.height; row++) {
-				for each (var pushable:Pushable in pushables) {
-					pushable.renderRow(row);
-				}
-				
-				if (player.y == row) {
-					player.render();
-				}
+			var pushable:Pushable;
+			
+			for each (pushable in pushables) {
+				pushable.renderWall();
 			}
+			
+			for each (pushable in pushables) {
+				pushable.renderCeiling();
+			}
+			
+			player.render();
 			
 			feedbackImage.alpha -= 1/16;
 			if (feedbackImage.alpha < 0) feedbackImage.alpha = 0;

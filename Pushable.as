@@ -16,7 +16,11 @@ package
 		
 		public var data:BitmapData;
 		
-		public var image:BitmapData;
+		public var wall:Image;
+		public var ceiling:Image;
+		
+		public static var colorCanMove:uint = 0xFFEEEEEE;
+		public static var colorNoMove:uint = 0xFF202020;
 		
 		public function Pushable (_data:BitmapData, _type:String = "solid")
 		{
@@ -29,7 +33,8 @@ package
 			
 			bounds = data.getColorBoundsRect(0xFF000000, 0xFF000000);
 			
-			image = new BitmapData(bounds.width*Main.TW, bounds.height*Main.TW+3, true, 0x0);
+			var wallBitmap:BitmapData = new BitmapData(bounds.width*Main.TW, bounds.height*Main.TW+3, true, 0x0);
+			var ceilingBitmap:BitmapData = new BitmapData(bounds.width*Main.TW, bounds.height*Main.TW+3, true, 0x0);
 			
 			for (var i:int = 0; i < bounds.width; i++) {
 				for (var j:int = 0; j < bounds.height; j++) {
@@ -38,41 +43,40 @@ package
 					
 					var c:uint = data.getPixel32(ix, iy);
 					
-					if (c & 0xFF000000) {
+					if ((c & 0xFF000000) == 0x0) continue;
+					
+					if (type == "floor") {
+					
+					} else {
 						FP.rect.width = Main.TW;
-						FP.rect.height = Main.TW + 3;
+						FP.rect.height = Main.TW;
 						FP.rect.x = i*Main.TW;
 						FP.rect.y = j*Main.TW;
 						
-						if (type == "floor") {
-							FP.rect.height -= 2;
-							FP.rect.y += 2;
-						}
-						
-						image.fillRect(FP.rect, c);
-						
-						FP.rect.height = Main.TW;
-						
-						if (type == "floor") {
-							FP.rect.height = 1;
-							FP.rect.y += Main.TW;
-						}
-						
-						image.fillRect(FP.rect, 0xFF202020);
-						
-						if (type == "floor") {
-							continue;
-						}
+						ceilingBitmap.fillRect(FP.rect, colorNoMove);
 						
 						FP.rect.width -= 2;
 						FP.rect.height -= 2;
 						FP.rect.x += 1;
 						FP.rect.y += 1;
 						
-						image.fillRect(FP.rect, c);
+						ceilingBitmap.fillRect(FP.rect, c);
+						
+						FP.rect.width = Main.TW;
+						FP.rect.height = 3;
+						FP.rect.x = i*Main.TW;
+						FP.rect.y = (j+1)*Main.TW;
+						
+						wallBitmap.fillRect(FP.rect, c);
 					}
 				}
 			}
+			
+			wall = new Image(wallBitmap);
+			ceiling = new Image(ceilingBitmap);
+			
+			wall.relative = false;
+			ceiling.relative = false;
 			
 			active = (type == "floor");
 			
@@ -166,17 +170,20 @@ package
 			y += dy;
 		}
 		
-		public function renderRow (row:int): void
+		public function renderWall(): void
 		{
-			rect.x = 0;
-			rect.y = (row - y - bounds.y) * Main.TW;
-			rect.width = image.width;
-			rect.height = 8;
-			
-			FP.point.x = (x+bounds.x) * Main.TW;
-			FP.point.y = (y+row) * Main.TW;
-			
-			FP.buffer.copyPixels(image, rect, FP.point, null, null, true);
+			graphic = wall;
+			graphic.x = (x+bounds.x)*Main.TW;
+			graphic.y = (y+bounds.y)*Main.TW;
+			super.render();
+		}
+		
+		public function renderCeiling(): void
+		{
+			graphic = ceiling;
+			graphic.x = (x+bounds.x)*Main.TW;
+			graphic.y = (y+bounds.y)*Main.TW;
+			super.render();
 		}
 		
 		private static var rect:Rectangle = new Rectangle;
