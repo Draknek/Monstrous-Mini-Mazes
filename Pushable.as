@@ -53,22 +53,40 @@ package
 						FP.rect.x = i*Main.TW;
 						FP.rect.y = j*Main.TW;
 						
-						ceilingBitmap.fillRect(FP.rect, colorNoMove);
-						
-						FP.rect.width -= 2;
-						FP.rect.height -= 2;
-						FP.rect.x += 1;
-						FP.rect.y += 1;
-						
 						ceilingBitmap.fillRect(FP.rect, c);
 						
-						FP.rect.width = Main.TW;
 						FP.rect.height = 3;
-						FP.rect.x = i*Main.TW;
-						FP.rect.y = (j+1)*Main.TW;
+						FP.rect.y += Main.TW;
 						
 						wallBitmap.fillRect(FP.rect, c);
 					}
+				}
+			}
+			
+			var bmp:BitmapData = ceilingBitmap;
+			
+			for (i = 0; i < bmp.width; i++) {
+				for (j = 0; j < bmp.height; j++) {
+					ix = i % Main.TW;
+					iy = j % Main.TW;
+					
+					if (! (ix == 0 || ix == 4 || iy == 0 || iy == 4)) {
+						continue;
+					}
+					
+					c = bmp.getPixel32(i, j);
+					
+					if (! c) continue;
+					
+					if (bmp.getPixel32(i-1,j) && bmp.getPixel32(i+1,j)
+						&& bmp.getPixel32(i,j-1) && bmp.getPixel32(i,j+1)
+						&& bmp.getPixel32(i-1,j-1) && bmp.getPixel32(i-1,j+1)
+						&& bmp.getPixel32(i+1,j-1) && bmp.getPixel32(i+1,j+1))
+					{
+						continue;
+					}
+					
+					bmp.setPixel32(i, j, colorNoMove);
 				}
 			}
 			
@@ -185,8 +203,6 @@ package
 			graphic.y = (y+bounds.y)*Main.TW;
 			super.render();
 		}
-		
-		private static var rect:Rectangle = new Rectangle;
 	}
 }
 
