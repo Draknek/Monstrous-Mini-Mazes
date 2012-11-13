@@ -309,7 +309,7 @@ package
 					var wall:Pushable = pushables[i];
 					wall.x = p.x;
 					wall.y = p.y;
-					wall.active = true;
+					wall.activate();
 				}
 			}
 			
