@@ -20,6 +20,8 @@ package
 		
 		public function Pushable (_data:BitmapData, _type:String = "solid")
 		{
+			if (!_type) _type = "solid";
+			
 			this.data = _data;
 			this.type = _type;
 			
