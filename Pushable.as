@@ -19,7 +19,7 @@ package
 		public var wall:Image;
 		public var ceiling:Image;
 		
-		public static var colorCanMove:uint = 0xFFEEEEEE;
+		public static var colorCanMove:uint = 0xFFc1c1c1;
 		public static var colorNoMove:uint = 0xFF202020;
 		
 		public function Pushable (_data:BitmapData, _type:String = "solid")
