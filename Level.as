@@ -52,6 +52,8 @@ package
 			
 			var replaceColor:uint = data.getPixel32(0,1);
 			
+			FP.screen.color = floorColor;
+			
 			pushables = [];
 			var lookup:Array = [];
 			
