@@ -24,15 +24,29 @@ package
 				for (var j:int = 0; j < data.height; j++) {
 					if (! data.getPixel32(i, j)) continue;
 					
-					FP.rect.width = Main.TW+2;
+					FP.rect.width = Main.TW;
 					FP.rect.height = Main.TW;
-					FP.rect.x = i*Main.TW-1;
+					FP.rect.x = i*Main.TW;
 					FP.rect.y = j*Main.TW;
 					
 					bitmap.fillRect(FP.rect, c);
 					
-					FP.rect.width = Main.TW;
+					FP.rect.width = Main.TW+2;
+					FP.rect.height = Main.TW-2;
+					FP.rect.x = i*Main.TW-1;
+					FP.rect.y = j*Main.TW+1;
+					
+					bitmap.fillRect(FP.rect, c);
+					
+					FP.rect.width = Main.TW-2;
 					FP.rect.height = Main.TW+2;
+					FP.rect.x = i*Main.TW+1;
+					FP.rect.y = j*Main.TW-1;
+					
+					bitmap.fillRect(FP.rect, c);
+					
+					FP.rect.width = Main.TW;
+					FP.rect.height = Main.TW+1;
 					FP.rect.x = i*Main.TW;
 					FP.rect.y = j*Main.TW-1;
 					
@@ -42,8 +56,21 @@ package
 			
 			for (i = 0; i < bitmap.width; i++) {
 				for (j = 0; j < bitmap.height; j++) {
-					if (bitmap.getPixel32(i, j) && ! bitmap.getPixel32(i, j-1)) {
-						bitmap.setPixel32(i, j, color2);
+					if (bitmap.getPixel32(i, j)) {
+						// Lava here
+						if (! bitmap.getPixel32(i, j-1)) {
+							// No lava above
+							bitmap.setPixel32(i, j, color2);
+						}
+					} else {
+						// No lava here
+						if (bitmap.getPixel32(i-1, j) && bitmap.getPixel32(i+1, j)
+							&& bitmap.getPixel32(i, j-1) && bitmap.getPixel32(i, j+1))
+						{
+							if (FP.rand(2)) bitmap.setPixel32(i-1, j, 0x0);
+							if (FP.rand(2)) bitmap.setPixel32(i+1, j, 0x0);
+							if (FP.rand(2)) bitmap.setPixel32(i, j+1, 0x0);
+						}
 					}
 				}
 			}
