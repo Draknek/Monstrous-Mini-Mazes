@@ -15,20 +15,27 @@ package
 		
 		public var sprite:Spritemap;
 		
+		public var direction:String = "down";
+		
 		public function Player (_x:int, _y:int, c:uint)
 		{
 			x = _x;
 			y = _y;
 			
-			sprite = new Spritemap(Gfx, 5, 6);
+			sprite = new Spritemap(Gfx, 7, 7);
 			sprite.relative = false;
 			
-			var framesPerDirection:int = 1;
+			var framesPerDirection:int = 2;
 			
 			sprite.add("down",  [0*framesPerDirection], 0.1);
 			sprite.add("up",    [1*framesPerDirection], 0.1);
 			sprite.add("left",  [2*framesPerDirection], 0.1);
 			sprite.add("right", [3*framesPerDirection], 0.1);
+			
+			sprite.add("pushdown",  [0*framesPerDirection + 1], 0.1);
+			sprite.add("pushup",    [1*framesPerDirection + 1], 0.1);
+			sprite.add("pushleft",  [2*framesPerDirection + 1], 0.1);
+			sprite.add("pushright", [3*framesPerDirection + 1], 0.1);
 			
 			graphic = sprite;
 			
@@ -40,7 +47,7 @@ package
 		
 		public override function render (): void
 		{
-			graphic.x = x*Main.TW;
+			graphic.x = x*Main.TW-1;
 			graphic.y = y*Main.TW-1;
 			super.render();
 		}
@@ -63,6 +70,7 @@ package
 				dy = int(Input.check(Key.DOWN)) - int(Input.check(Key.UP));
 				
 				if ((! dx && ! dy) || (dx && dy)) {
+					sprite.play(direction);
 					moveCounter = 0;
 					return;
 				}
@@ -78,10 +86,12 @@ package
 				moveCounter = 0;
 			}
 			
-			if (dx < 0) sprite.play("left");
-			else if (dx > 0) sprite.play("right")
-			else if (dy < 0) sprite.play("up")
-			else if (dy > 0) sprite.play("down")
+			if (dx < 0) direction = "left";
+			else if (dx > 0) direction = "right";
+			else if (dy < 0) direction = "up";
+			else if (dy > 0) direction = "down";
+			
+			sprite.play("push" + direction);
 			
 			var wall:Pushable;
 			var currentFloor:Entity;
@@ -106,6 +116,8 @@ package
 				moveCounter = -1000000;
 				return;
 			}
+			
+			var pushing:Boolean = false;
 			
 			wall = collide("solid", x+dx, y+dy) as Pushable;
 			
@@ -133,10 +145,14 @@ package
 					e.y += dy;
 					e.moving = false;
 				}
+				
+				pushing = true;
 			}
 			
 			x += dx;
 			y += dy;
+			
+			if (! pushing) sprite.play(direction);
 			
 			var checkpoint:Entity = collide("checkpoint", x, y);
 			
