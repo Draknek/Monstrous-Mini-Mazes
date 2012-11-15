@@ -39,9 +39,9 @@ package
 					bitmap.fillRect(FP.rect, c);
 					
 					FP.rect.width = Main.TW-2;
-					FP.rect.height = Main.TW+2;
+					FP.rect.height = Main.TW+1;
 					FP.rect.x = i*Main.TW+1;
-					FP.rect.y = j*Main.TW-1;
+					FP.rect.y = j*Main.TW;
 					
 					bitmap.fillRect(FP.rect, c);
 					
