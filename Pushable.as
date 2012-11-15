@@ -18,6 +18,7 @@ package
 		
 		public var wall:Image;
 		public var ceiling:Image;
+		public var ceilingOutline:Image;
 		
 		public static var colorCanMove:uint = 0xFFc1c1c1;
 		public static var colorNoMove:uint = 0xFF202020;
@@ -35,6 +36,7 @@ package
 			
 			var wallBitmap:BitmapData = new BitmapData(bounds.width*Main.TW, bounds.height*Main.TW+3, true, 0x0);
 			var ceilingBitmap:BitmapData = new BitmapData(bounds.width*Main.TW, bounds.height*Main.TW+3, true, 0x0);
+			var ceilingOutlineBitmap:BitmapData = new BitmapData(bounds.width*Main.TW, bounds.height*Main.TW+3, true, 0x0);
 			
 			for (var i:int = 0; i < bounds.width; i++) {
 				for (var j:int = 0; j < bounds.height; j++) {
@@ -94,15 +96,19 @@ package
 						continue;
 					}
 					
-					bmp.setPixel32(i, j, colorNoMove);
+					ceilingOutlineBitmap.setPixel32(i, j, 0xFFFFFFFF);
 				}
 			}
 			
 			wall = new Image(wallBitmap);
 			ceiling = new Image(ceilingBitmap);
+			ceilingOutline = new Image(ceilingOutlineBitmap);
 			
 			wall.relative = false;
 			ceiling.relative = false;
+			ceilingOutline.relative = false;
+			
+			ceilingOutline.color = colorNoMove;
 			
 			active = (type == "floor");
 			
@@ -162,13 +168,15 @@ package
 		{
 			active = true;
 			
-			ceiling._source.threshold(ceiling._source, ceiling._sourceRect, FP.zero, "==", colorNoMove, colorCanMove);
-			
-			ceiling.updateBuffer();
-			
 			ceiling.tintMode = 1.0;
 			
 			FP.tween(ceiling, {tintMode: 0.0}, 32);
+			
+			ceilingOutline.color = colorCanMove;
+			
+			var walls:Array = Level(world).pushables;
+			
+			phase = 0.03 - (walls.indexOf(this) / walls.length)*0.01;
 		}
 		
 		private function makeFeedback (that:Pushable, dx:int, dy:int):void
@@ -217,9 +225,21 @@ package
 			super.render();
 		}
 		
+		private var t:int = 0;
+		private var phase:Number = 0;
+		
 		public function renderCeiling(): void
 		{
 			graphic = ceiling;
+			graphic.x = (x+bounds.x)*Main.TW;
+			graphic.y = (y+bounds.y)*Main.TW;
+			super.render();
+			
+			if (active) {
+				t++;
+				ceilingOutline.tinting = Math.sin(t * phase)*0.5+0.5;
+			}
+			graphic = ceilingOutline;
 			graphic.x = (x+bounds.x)*Main.TW;
 			graphic.y = (y+bounds.y)*Main.TW;
 			super.render();
