@@ -77,7 +77,7 @@ package
 			
 			graphic = new Stamp(bitmap);
 			
-			graphic.y = 3;
+			graphic.y = Main.wallHeight;
 			
 			mask = new Pixelmask(data);
 		}

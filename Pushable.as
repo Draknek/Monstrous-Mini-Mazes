@@ -34,9 +34,9 @@ package
 			
 			bounds = data.getColorBoundsRect(0xFF000000, 0xFF000000);
 			
-			var wallBitmap:BitmapData = new BitmapData(bounds.width*Main.TW, bounds.height*Main.TW+3, true, 0x0);
-			var ceilingBitmap:BitmapData = new BitmapData(bounds.width*Main.TW, bounds.height*Main.TW+3, true, 0x0);
-			var ceilingOutlineBitmap:BitmapData = new BitmapData(bounds.width*Main.TW, bounds.height*Main.TW+3, true, 0x0);
+			var wallBitmap:BitmapData = new BitmapData(bounds.width*Main.TW, bounds.height*Main.TW+Main.wallHeight, true, 0x0);
+			var ceilingBitmap:BitmapData = new BitmapData(bounds.width*Main.TW, bounds.height*Main.TW+Main.wallHeight, true, 0x0);
+			var ceilingOutlineBitmap:BitmapData = new BitmapData(bounds.width*Main.TW, bounds.height*Main.TW+Main.wallHeight, true, 0x0);
 			
 			for (var i:int = 0; i < bounds.width; i++) {
 				for (var j:int = 0; j < bounds.height; j++) {
@@ -53,12 +53,12 @@ package
 					FP.rect.y = j*Main.TW;
 					
 					if (type == "floor") {
-						FP.rect.y += 3;
+						FP.rect.y += Main.wallHeight;
 						wallBitmap.fillRect(FP.rect, c);
 					} else {
 						ceilingBitmap.fillRect(FP.rect, c);
 						
-						FP.rect.height = 3;
+						FP.rect.height = Main.wallHeight;
 						FP.rect.y += Main.TW;
 						
 						wallBitmap.fillRect(FP.rect, c);
@@ -74,7 +74,7 @@ package
 					iy = j % Main.TW;
 					
 					if (type == "floor") {
-						if (iy != 2) continue;
+						if (iy != (Main.wallHeight - 1)%Main.TW) continue;
 						if (bmp.getPixel32(i,j+1) || !bmp.getPixel32(i,j)) continue;
 						bmp.setPixel32(i, j, colorNoMove);
 						continue;

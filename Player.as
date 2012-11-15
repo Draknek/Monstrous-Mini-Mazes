@@ -41,7 +41,7 @@ package
 		public override function render (): void
 		{
 			graphic.x = x*Main.TW;
-			graphic.y = y*Main.TW;
+			graphic.y = y*Main.TW-1;
 			super.render();
 		}
 		

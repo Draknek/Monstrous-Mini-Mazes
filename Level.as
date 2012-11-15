@@ -177,7 +177,7 @@ package
 		{
 			feedbackImage.updateBuffer();
 			feedbackImage.alpha = 1.0;
-			feedbackImage.y = lava ? 3 : 0;
+			feedbackImage.y = lava ? Main.wallHeight : 0;
 		}
 		
 		private function sortPushables ():void
@@ -416,8 +416,6 @@ package
 				pushable.renderWall();
 			}
 			
-			player.render();
-			
 			for each (pushable in pushables) {
 				pushable.renderCeiling();
 			}
@@ -428,6 +426,8 @@ package
 			if (feedbackImage.alpha < 0) feedbackImage.alpha = 0;
 			
 			super.render();
+			
+			player.render();
 		}
 	}
 }

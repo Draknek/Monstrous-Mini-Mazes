@@ -13,6 +13,7 @@ package
 		public static const FONT2:Class;
 		
 		public static const TW:int = 5;
+		public static const wallHeight:int = 2;
 		
 		public static var debugMode:Boolean = false;
 		
