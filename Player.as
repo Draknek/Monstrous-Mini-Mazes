@@ -11,11 +11,13 @@ package
 	{
 		[Embed(source="images/player.png")] public static const Gfx: Class;
 		
-		public var moveCounter:int = 0;
+		public var canMove:Boolean = true;
+		
+		public var moveQueue:Array = [];
 		
 		public var sprite:Spritemap;
 		
-		public var direction:String = "down";
+		public var direction:String;
 		
 		public function Player (_x:int, _y:int, c:uint)
 		{
@@ -52,39 +54,54 @@ package
 			super.render();
 		}
 		
+		private function moveDone (): void
+		{
+			canMove = true;
+			sprite.play(direction);
+			direction = null;
+		}
+		
 		public override function update (): void
 		{
+			var checkpoint:Entity = collide("checkpoint", x, y);
+			
+			if (checkpoint) {
+				Level(world).hitCheckpoint(checkpoint);
+			}
+			
 			if (Main.debugMode && Input.pressed(Key.SPACE)) {
 				collidable = ! collidable;
-				moveCounter = 0;
 			}
 			
-			var dx:int = int(Input.pressed(Key.RIGHT)) - int(Input.pressed(Key.LEFT));
+			if (Input.pressed(Key.RIGHT)) moveQueue.push(Key.RIGHT);
+			if (Input.pressed(Key.LEFT)) moveQueue.push(Key.LEFT);
+			if (Input.pressed(Key.UP)) moveQueue.push(Key.UP);
+			if (Input.pressed(Key.DOWN)) moveQueue.push(Key.DOWN);
 			
-			if (! dx) {
-				var dy:int = int(Input.pressed(Key.DOWN)) - int(Input.pressed(Key.UP));
-			}
+			if (! canMove) return;
 			
-			if (!dx && ! dy) {
+			var dx:int;
+			var dy:int;
+			
+			if (moveQueue.length) {
+				var key:uint = moveQueue.shift();
+				
+				dx = int(key == Key.RIGHT) - int(key == Key.LEFT);
+				dy = int(key == Key.DOWN) - int(key == Key.UP);
+			} else {
 				dx = int(Input.check(Key.RIGHT)) - int(Input.check(Key.LEFT));
 				dy = int(Input.check(Key.DOWN)) - int(Input.check(Key.UP));
 				
 				if ((! dx && ! dy) || (dx && dy)) {
-					sprite.play(direction);
-					moveCounter = 0;
+					if (direction) {
+						sprite.play(direction);
+						direction = null;
+					}
 					return;
 				}
-				
-				moveCounter++;
-				
-				if (moveCounter < 10) {
-					return;
-				}
-				
-				moveCounter -= 10;
-			} else {
-				moveCounter = 0;
 			}
+			
+			var newMove:Boolean = (direction == null);
 			
 			if (dx < 0) direction = "left";
 			else if (dx > 0) direction = "right";
@@ -96,7 +113,7 @@ package
 			var wall:Pushable;
 			var currentFloor:Entity;
 			
-			Level.clearFeedback();
+			if (newMove) Level.clearFeedback();
 			
 			if (collidable && collide("lava", x+dx, y+dy) && ! collide("floor", x+dx, y+dy)) {
 				wall = collide("solid", x+dx, y+dy) as Pushable;
@@ -108,12 +125,11 @@ package
 						currentFloor = null;
 					}
 					
-					if (! currentFloor) {
+					if (newMove && ! currentFloor) {
 						Level.feedback.setPixel32(x+dx, y+dy, Level.lavaColor);
 						Level.updateFeedback(true);
 					}
 				}
-				moveCounter = -1000000;
 				return;
 			}
 			
@@ -121,12 +137,13 @@ package
 			
 			wall = collide("solid", x+dx, y+dy) as Pushable;
 			
+			var tweenTime:int = 15;
+			
 			if (collidable && wall) {
 				var pushList:Array = wall.getPushList(dx, dy);
 				
 				if (! pushList) {
-					Level.updateFeedback();
-					moveCounter = -1000000;
+					if (newMove) Level.updateFeedback();
 					return;
 				}
 				
@@ -141,24 +158,20 @@ package
 				var e:Pushable;
 				
 				for each (e in pushList) {
-					e.x += dx;
-					e.y += dy;
+					FP.tween(e, {x: e.x+dx, y:e.y+dy}, tweenTime, {tweener: FP.tweener});
 					e.moving = false;
 				}
 				
 				pushing = true;
 			}
 			
-			x += dx;
-			y += dy;
+			canMove = false;
+			
+			if (! pushing) tweenTime = 10;
+			
+			FP.tween(this, {x: x+dx, y:y+dy}, tweenTime, {tweener: FP.tweener, complete: moveDone});
 			
 			if (! pushing) sprite.play(direction);
-			
-			var checkpoint:Entity = collide("checkpoint", x, y);
-			
-			if (checkpoint) {
-				Level(world).hitCheckpoint(checkpoint);
-			}
 			
 			Audio.playNote();
 		}
