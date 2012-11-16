@@ -27,17 +27,22 @@ package
 			sprite = new Spritemap(Gfx, 7, 7);
 			sprite.relative = false;
 			
-			var framesPerDirection:int = 2;
+			var framesPerDirection:int = 10;
 			
-			sprite.add("down",  [0*framesPerDirection], 0.1);
-			sprite.add("up",    [1*framesPerDirection], 0.1);
-			sprite.add("left",  [2*framesPerDirection], 0.1);
-			sprite.add("right", [3*framesPerDirection], 0.1);
+			var dirs:Array = ["down", "up", "left", "right"];
 			
-			sprite.add("pushdown",  [0*framesPerDirection + 1], 0.1);
-			sprite.add("pushup",    [1*framesPerDirection + 1], 0.1);
-			sprite.add("pushleft",  [2*framesPerDirection + 1], 0.1);
-			sprite.add("pushright", [3*framesPerDirection + 1], 0.1);
+			for (var i:int = 0; i < dirs.length; i++) {
+				var dirString:String = dirs[i];
+				sprite.add(dirString, [i*framesPerDirection], 0.1);
+				sprite.add("push" + dirString, [i*framesPerDirection + 5], 0.1);
+				
+				sprite.add("walk" + dirString,
+					FP.frames(i*framesPerDirection + 1, i*framesPerDirection + 4),
+					0.25);
+				sprite.add("pushmove" + dirString,
+					FP.frames(i*framesPerDirection + 6, i*framesPerDirection + 9),
+					0.25);
+			}
 			
 			graphic = sprite;
 			
@@ -171,7 +176,7 @@ package
 			
 			FP.tween(this, {x: x+dx, y:y+dy}, tweenTime, {tweener: FP.tweener, complete: moveDone});
 			
-			if (! pushing) sprite.play(direction);
+			sprite.play((pushing ? "pushmove" : "walk") + direction);
 			
 			Audio.playNote();
 		}
