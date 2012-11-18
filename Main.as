@@ -5,6 +5,8 @@ package
 	import net.flashpunk.graphics.*;
 	import net.flashpunk.utils.*;
 	
+	import flash.system.*;
+	
 	public class Main extends Engine
 	{
 		[Embed(source = 'fonts/7x5.ttf', embedAsCFF="false", fontFamily = '7x5')]
@@ -17,8 +19,24 @@ package
 		
 		public static var debugMode:Boolean = false;
 		
+		public static var touchscreen:Boolean = false;
+		public static var isAndroid:Boolean = false;
+		public static var isIOS:Boolean = false;
+		public static var isPlaybook:Boolean = false;
+		
 		public function Main () 
 		{
+			if (Capabilities.manufacturer.toLowerCase().indexOf("ios") != -1) {
+				isIOS = true;
+				touchscreen = true;
+			}
+			else if (Capabilities.manufacturer.toLowerCase().indexOf("android") >= 0) {
+				isAndroid = true;
+				touchscreen = true;
+			} else if (Capabilities.os.indexOf("QNX") >= 0) {
+				isPlaybook = true;
+				touchscreen = true;
+			}
 			super(80*TW, 60*TW, 60, true);
 			
 			FP.screen.color = 0xdeeed6;
@@ -59,6 +77,10 @@ package
 				debugMode = true;
 				return true;
 			}
+			
+			if (url.substr(0, startCheck) != 'http://'
+				&& url.substr(0, startCheck) != 'https://'
+				&& url.substr(0, startCheck) != 'ftp://') return true;
 			
 			var domainLen:int = url.indexOf('/', startCheck) - startCheck;
 			var host:String = url.substr(startCheck, domainLen);

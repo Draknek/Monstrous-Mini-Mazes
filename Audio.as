@@ -102,6 +102,8 @@ package
 		
 		private static function addContextMenu (o:InteractiveObject):void
 		{
+			if (Main.touchscreen) return;
+			
 			var menu:ContextMenu = o.contextMenu || new ContextMenu;
 			
 			menu.hideBuiltInItems();
