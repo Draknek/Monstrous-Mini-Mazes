@@ -34,6 +34,7 @@ package
 		public static var movingFloorColor:uint;
 		
 		public var visibleBounds:Rectangle;
+		public var clipRect:Rectangle;
 		
 		public function Level ()
 		{
@@ -282,6 +283,12 @@ package
 			
 			if (FP.screen.scale == scale) return false;
 			
+			if (! clipRect) {
+				clipRect = rect.clone();
+			} else {
+				FP.tween(clipRect, {x: rect.x, y: rect.y, width: rect.width, height: rect.height}, 32);
+			}
+			
 			var borderX:int;
 			var borderY:int;
 			
@@ -433,6 +440,30 @@ package
 			super.render();
 			
 			player.render();
+			
+			FP.rect.x = 0;
+			FP.rect.y = 0;
+			FP.rect.width = FP.buffer.width;
+			FP.rect.height = clipRect.y;
+			
+			FP.buffer.fillRect(FP.rect, 0x0);
+			
+			FP.rect.y = clipRect.y + clipRect.height;
+			FP.rect.height = FP.buffer.height;
+			
+			FP.buffer.fillRect(FP.rect, 0x0);
+			
+			FP.rect.x = 0;
+			FP.rect.y = 0;
+			FP.rect.width = clipRect.x;
+			FP.rect.height = FP.buffer.height;
+			
+			FP.buffer.fillRect(FP.rect, 0x0);
+			
+			FP.rect.x = clipRect.x + clipRect.width;
+			FP.rect.width = FP.buffer.width;
+			
+			FP.buffer.fillRect(FP.rect, 0x0);
 		}
 	}
 }

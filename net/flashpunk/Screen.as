@@ -37,8 +37,8 @@
 			}
 			
 			// create screen buffers
-			_bitmap[0] = new Bitmap(new BitmapData(FP.width, FP.height, false, _color), PixelSnapping.NEVER);
-			_bitmap[1] = new Bitmap(new BitmapData(FP.width, FP.height, false, _color), PixelSnapping.NEVER);
+			_bitmap[0] = new Bitmap(new BitmapData(FP.width, FP.height, true, _color), PixelSnapping.NEVER);
+			_bitmap[1] = new Bitmap(new BitmapData(FP.width, FP.height, true, _color), PixelSnapping.NEVER);
 			_sprite.addChild(_bitmap[0]).visible = true;
 			_sprite.addChild(_bitmap[1]).visible = false;
 			FP.buffer = _bitmap[0].bitmapData;
