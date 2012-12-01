@@ -256,22 +256,27 @@ package
 			
 			rect = rect.clone();
 			
-			rect.x += 1;
-			rect.y += 1;
-			
-			rect.width -= 2;
-			rect.height -= 2;
-			
 			rect.x *= Main.TW;
 			rect.y *= Main.TW;
 			rect.width *= Main.TW;
 			rect.height *= Main.TW;
 			
-			var scale:Number = (FP.stage.stageWidth) / rect.width;
+			//var minScaleX:Number = FP.stage.stageWidth / rect.width;
+			//var minScaleY:Number = FP.stage.stageHeight / rect.height;
 			
-			scale = Math.ceil(scale);
+			var maxScaleX:Number = FP.stage.stageWidth / (rect.width - Main.TW*2);
+			var maxScaleY:Number = FP.stage.stageHeight / (rect.height - Main.TW*2);
 			
-			scale -= 1;
+			//minScaleX = Math.floor(minScaleX);
+			//minScaleY = Math.floor(minScaleY);
+			
+			maxScaleX = Math.ceil(maxScaleX) - 1;
+			maxScaleY = Math.ceil(maxScaleY) - 1;
+			
+			//var minScale:Number = Math.max(minScaleX, minScaleY);
+			var maxScale:Number = Math.min(maxScaleX, maxScaleY);
+			
+			var scale:Number = maxScale;
 			
 			if (scale > 8) scale -= 1;
 			
