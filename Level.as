@@ -192,6 +192,10 @@ package
 		{
 			if (! levelData) levelData = FP.getBitmap(MapGfx);
 			
+			if (! Main.debugMode) {
+				return;
+			}
+			
 			if (loading) {
 				loading = false;
 				return;
@@ -202,7 +206,9 @@ package
 			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, function (e:Event):void {
 				try {
 					levelData = Bitmap(loader.content).bitmapData;
-				} catch (error:Error) {}
+				} catch (error:Error) {
+					FP.log(error);
+				}
 				
 				FP.world = new Level;
 			});
@@ -262,11 +268,14 @@ package
 			rect.width *= Main.TW;
 			rect.height *= Main.TW;
 			
-			//var minScaleX:Number = FP.stage.stageWidth / rect.width;
-			//var minScaleY:Number = FP.stage.stageHeight / rect.height;
+			var stageWidth:int = FP.stage.stageWidth;
+			var stageHeight:int = FP.stage.stageHeight;
 			
-			var maxScaleX:Number = FP.stage.stageWidth / (rect.width - Main.TW*2);
-			var maxScaleY:Number = FP.stage.stageHeight / (rect.height - Main.TW*2);
+			//var minScaleX:Number = stageWidth / rect.width;
+			//var minScaleY:Number = stageHeight / rect.height;
+			
+			var maxScaleX:Number = stageWidth / (rect.width - Main.TW*2);
+			var maxScaleY:Number = stageHeight / (rect.height - Main.TW*2);
 			
 			//minScaleX = Math.floor(minScaleX);
 			//minScaleY = Math.floor(minScaleY);
@@ -281,9 +290,9 @@ package
 			
 			if (scale > 8) scale -= 1;
 			
-			if (FP.screen.scale == scale) return false;
+			//if (FP.screen.scale == scale) return false;
 			
-			if (! clipRect) {
+			if (! clipRect || instant) {
 				clipRect = rect.clone();
 			} else {
 				FP.tween(clipRect, {x: rect.x, y: rect.y, width: rect.width, height: rect.height}, 32);
@@ -292,8 +301,8 @@ package
 			var borderX:int;
 			var borderY:int;
 			
-			borderX = FP.stage.stageWidth - rect.width*scale;
-			borderY = FP.stage.stageHeight - rect.height*scale;
+			borderX = stageWidth - rect.width*scale;
+			borderY = stageHeight - rect.height*scale;
 			
 			var screenX:int = - rect.x * scale + borderX/2;
 			var screenY:int = - rect.y * scale + borderY/2;
@@ -420,6 +429,10 @@ package
 		
 		public override function render (): void
 		{
+			if (! clipRect) {
+				refocus(true);
+			}
+			
 			lava.render();
 			
 			var pushable:Pushable;
