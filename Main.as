@@ -56,6 +56,8 @@ package
 			super.init();
 			
 			FP.world = debugMode ? new Level() : new Menu();
+			
+			stage.quality = "low";
 		}
 		
 		public override function update (): void
